@@ -1,118 +1,60 @@
-import streamlit as st
+from flask import Flask, render_template, request
 import numpy as np
 import pickle
 
-# -----------------------------
-# Load model and scaler
-# -----------------------------
-model = pickle.load(open('lin_model.pkl', 'rb'))
+# Initialize Flask app
+app = Flask(__name__)
+
+# Load trained model and scaler
+model = pickle.load(open('best_rf_model.pkl', 'rb'))
 scaler = pickle.load(open('ss.pkl', 'rb'))
 
-# -----------------------------
-# Page configuration
-# -----------------------------
-st.set_page_config(
-    page_title="Car Price Prediction",
-    page_icon="🚗",
-    layout="centered"
-)
 
-# -----------------------------
-# App Title
-# -----------------------------
-st.markdown(
-    "<h1 style='text-align: center;'>🚗 Car Price Prediction</h1>",
-    unsafe_allow_html=True
-)
-st.markdown(
-    "<p style='text-align: center;'>Predict the selling price of a car using Machine Learning</p>",
-    unsafe_allow_html=True
-)
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-st.divider()
 
-# -----------------------------
-# Input fields
-# -----------------------------
-col1, col2 = st.columns(2)
+@app.route('/predict', methods=['POST'])
+def predict():
+    try:
+        # Get form values
+        year = int(request.form['year'])
+        present_price = float(request.form['present_price'])
+        kms_driven = int(request.form['kms_driven'])
+        fuel_type = int(request.form['fuel_type'])
+        seller_type = int(request.form['seller_type'])
+        transmission = int(request.form['transmission'])
+        owner = int(request.form['owner'])
 
-with col1:
-    year = st.number_input(
-        "Manufacturing Year",
-        min_value=1990,
-        max_value=2035,
-        value=2015,
-        step=1
-    )
+        # Arrange input in same order as training data
+        input_data = np.array([[year,
+                                present_price,
+                                kms_driven,
+                                fuel_type,
+                                seller_type,
+                                transmission,
+                                owner]])
 
-    kms_driven = st.number_input(
-        "Kilometers Driven",
-        min_value=0,
-        value=50000,
-        step=1000
-    )
+        # Scale the input
+        scaled_input = scaler.transform(input_data)
 
-    fuel_type = st.selectbox(
-        "Fuel Type",
-        options=["Petrol", "Diesel", "CNG"]
-    )
+        # Predict price
+        prediction = model.predict(scaled_input)[0]
 
-with col2:
-    present_price = st.number_input(
-        "Present Price (₹ Lakhs)",
-        min_value=0.0,
-        value=5.0,
-        step=0.1
-    )
+        prediction = round(prediction, 2)
 
-    owner = st.selectbox(
-        "Number of Previous Owners",
-        options=[0, 1, 2, 3]
-    )
+        return render_template(
+            'index.html',
+            prediction_text=f"Estimated Selling Price: ₹ {prediction} Lakhs"
+        )
 
-    transmission = st.selectbox(
-        "Transmission",
-        options=["Manual", "Automatic"]
-    )
+    except Exception as e:
+        return render_template(
+            'index.html',
+            prediction_text=f"Error: {str(e)}"
+        )
 
-seller_type = st.selectbox(
-    "Seller Type",
-    options=["Dealer", "Individual"]
-)
 
-# -----------------------------
-# Encoding (same as training)
-# -----------------------------
-fuel_map = {"Petrol": 0, "Diesel": 1, "CNG": 2}
-seller_map = {"Dealer": 0, "Individual": 1}
-transmission_map = {"Manual": 0, "Automatic": 1}
-
-fuel_encoded = fuel_map[fuel_type]
-seller_encoded = seller_map[seller_type]
-transmission_encoded = transmission_map[transmission]
-
-# -----------------------------
-# Prediction
-# -----------------------------
-st.divider()
-
-if st.button("🔍 Predict Price", use_container_width=True):
-    input_data = np.array([[year,
-                            present_price,
-                            kms_driven,
-                            fuel_encoded,
-                            seller_encoded,
-                            transmission_encoded,
-                            owner]])
-
-    scaled_input = scaler.transform(input_data)
-    prediction = model.predict(scaled_input)[0]
-
-    prediction = round(prediction, 2)
-
-    st.success(f"💰 Estimated Selling Price: ₹ {prediction} Lakhs")
-
-# -----------------------------
-# Footer
-# -----------------------------
-
+if __name__ == "__main__":
+    app.run(debug=True)
