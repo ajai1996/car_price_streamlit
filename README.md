@@ -39,8 +39,6 @@ This project uses **Supervised Machine Learning (Linear Regression)** to predict
 - **Streamlit**
 - **Pickle**
 
----
 
-## 📂 Project Structure
 
 
