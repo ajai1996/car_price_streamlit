@@ -5,6 +5,11 @@ A Machine Learning–based web application that predicts the **selling price of 
 The application is built using **Python**, **Scikit-learn**, and **Streamlit**, and provides an easy-to-use, interactive interface for real-time predictions.
 
 ---
+## 🎬 Application Demo
+
+![Car Price Prediction App Demo](https://raw.githubusercontent.com/ajai1996/github_practi/refs/heads/main/Recording%202026-02-04%20100249.gif)
+
+
 
 ## 🔍 Problem Statement
 
