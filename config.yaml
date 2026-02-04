@@ -1,0 +1,2 @@
+model_name="best_rf_model.pkl"
+scaler_name="ss.pkl"
