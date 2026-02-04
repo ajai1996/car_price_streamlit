@@ -44,6 +44,44 @@ This project uses **Supervised Machine Learning (Linear Regression)** to predict
 - **Streamlit**
 - **Pickle**
 
+----
+
+## ▶️ How to Run the Application Locally
+
+Follow the steps below to run the **Car Price Prediction Streamlit App** on your local machine.
+
+---
+
+### 1️⃣ Clone the Repository
+```bash
+git clone https://github.com/ajai1996/car_price_streamlit.git
+cd car_price_streamlit
+2️⃣ Create a Virtual Environment
+
+   python -m venv venv
+
+    venv\Scripts\activate
+
+3️⃣ Install Required Dependencies
+
+    pip install -r requirements.txt
+
+4️⃣ Ensure Required Files Are Present
+
+Make sure the following files exist in the project directory:
+
+app.py
+
+lin_model.pkl
+
+ss.pkl
+
+5️⃣ Run the Streamlit App
+
+streamlit run app.py
+```
+
+
 
 
 
